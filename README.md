@@ -4,6 +4,35 @@
 
 Raycast Script Command で Notion の INBOX データベースに 1 件追加する Python スクリプトです。
 
+## 30秒で分かる
+
+Raycast から `"title"` または `"title" "body"` を入力するだけで、Notion の指定DBにページを追加します。外部ライブラリ不要、失敗時はHTTPエラー詳細を表示し、原因を切り分けしやすくしています。
+
+## 実行例
+
+入力（Raycast）:
+
+```text
+"買い物" "牛乳を買う"
+```
+
+出力（成功時）:
+
+```text
+https://www.notion.so/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+## Demo
+
+### Input example
+
+![Raycast input example](docs/images/raycast-input-example.jpg)
+
+### Success output
+
+![Raycast success output](docs/images/raycast-success-output.jpg)
+
+
 - Command: `nin`
 - Runtime: Python 3.10+
 - Dependency: 標準ライブラリのみ（外部ライブラリなし）
