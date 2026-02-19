@@ -3,10 +3,10 @@
 
 # @raycast.schemaVersion 1
 # @raycast.title nin
-# @raycast.mode inline
+# @raycast.mode fullOutput
 # @raycast.packageName Notion
-# @raycast.description nin "タイトル" "本文" でNotionにINBOX投入
-# @raycast.argument1 { "type": "text", "placeholder": "nin \"タイトル\" \"本文\"（本文は省略・空も可）" }
+# @raycast.description title, body -> Notion inbox
+# @raycast.argument1 { "type": "text", "placeholder": "title, body" }
 # @raycast.icon 📥
 # @raycast.author
 
@@ -241,6 +241,10 @@ def load_config() -> tuple[str, str, str, str, bool]:
 def main() -> int:
     try:
         raw_input = sys.argv[1] if len(sys.argv) > 1 else ""
+        if not raw_input.strip():
+            print('入力例: "タイトル" "本文"')
+            return 0
+
         title, body = parse_input(raw_input)
         token, database_id, title_property, notion_version, append_body = load_config()
         payload = build_payload(
