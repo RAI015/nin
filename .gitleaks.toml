@@ -1,0 +1,8 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Local runtime secret files"
+paths = [
+  '''secrets\.env$'''
+]
