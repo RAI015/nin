@@ -26,7 +26,7 @@ def usage() -> str:
         "使い方:\n"
         '  nin "タイトル, 本文"\n'
         '  nin "タイトル"\n'
-        '  nin "タイトル," ""\n'
+        '  nin "タイトル,"\n'
         "\n"
         "補足:\n"
         '- 先頭の "nin" は省略可（例: "タイトル"）\n'
@@ -61,6 +61,9 @@ def parse_input(raw_input: str) -> tuple[str, str]:
         text = text[4:].strip()
     elif text.lower() == "nin":
         raise ValueError("タイトルがありません。")
+
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in ('"', "'"):
+        text = text[1:-1].strip()
 
     if "," in text:
         title, body = text.split(",", 1)
