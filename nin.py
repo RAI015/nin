@@ -13,12 +13,10 @@
 import json
 import os
 import re
-import shlex
 import sys
 import traceback
 import urllib.error
 import urllib.request
-
 
 DEFAULT_SECRET_FILE = "~/.config/nin/secrets.env"
 
@@ -26,9 +24,9 @@ DEFAULT_SECRET_FILE = "~/.config/nin/secrets.env"
 def usage() -> str:
     return (
         "使い方:\n"
-        '  nin "タイトル" "本文"\n'
+        '  nin "タイトル, 本文"\n'
         '  nin "タイトル"\n'
-        '  nin "タイトル" ""\n'
+        '  nin "タイトル," ""\n'
         "\n"
         "補足:\n"
         '- 先頭の "nin" は省略可（例: "タイトル"）\n'
@@ -57,22 +55,20 @@ def parse_input(raw_input: str) -> tuple[str, str]:
     if not raw_input or not raw_input.strip():
         raise ValueError("入力が空です。")
 
-    try:
-        tokens = shlex.split(raw_input)
-    except ValueError as exc:
-        raise ValueError(f"入力のクォート解釈に失敗しました: {exc}") from exc
+    text = raw_input.strip()
 
-    if not tokens:
-        raise ValueError("入力が空です。")
-
-    if tokens[0].lower() == "nin":
-        tokens = tokens[1:]
-
-    if not tokens:
+    if text.lower().startswith("nin "):
+        text = text[4:].strip()
+    elif text.lower() == "nin":
         raise ValueError("タイトルがありません。")
 
-    title = tokens[0]
-    body = tokens[1] if len(tokens) >= 2 else ""
+    if "," in text:
+        title, body = text.split(",", 1)
+        title = title.strip()
+        body = body.strip()
+    else:
+        title = text.strip()
+        body = ""
 
     if title == "":
         raise ValueError("タイトルが空です。")
@@ -242,7 +238,7 @@ def main() -> int:
     try:
         raw_input = sys.argv[1] if len(sys.argv) > 1 else ""
         if not raw_input.strip():
-            print('入力例: "タイトル" "本文"')
+            print('入力例: "タイトル, 本文"')
             return 0
 
         title, body = parse_input(raw_input)
