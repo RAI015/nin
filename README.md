@@ -6,14 +6,14 @@ Raycast Script Command で Notion の INBOX データベースに 1 件追加す
 
 ## 30秒で分かる
 
-Raycast から `"title"` または `"title" "body"` を入力するだけで、Notion の指定DBにページを追加します。外部ライブラリ不要、失敗時はHTTPエラー詳細を表示し、原因を切り分けしやすくしています。
+Raycast から `title` または `title, body` を入力するだけで、Notion の指定DBにページを追加します。外部ライブラリ不要、失敗時はHTTPエラー詳細を表示し、原因を切り分けしやすくしています。
 
 ## 実行例
 
 入力（Raycast）:
 
 ```text
-"買い物" "牛乳を買う"
+買い物, 牛乳を買う
 ```
 
 出力（成功時）:
@@ -31,7 +31,6 @@ https://www.notion.so/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ### Success output
 
 ![Raycast success output](docs/images/raycast-success-output.jpg)
-
 
 - Command: `nin`
 - Runtime: Python 3.10+
@@ -59,6 +58,7 @@ chmod +x nin.py
 ```
 
 3. Raycast 設定で Script Directory を追加
+
 - `Raycast Settings > Extensions > Script Commands`
 
 4. 機密設定ファイルを作成
@@ -95,11 +95,9 @@ launchctl setenv NOTION_ENV_FILE "/absolute/path/to/secrets.env"
 `title` だけでも実行できます（`body` は省略可）。
 
 ```text
-"title"
-"title" "body"
+title
+title, body
 ```
-
-※ 互換のため `nin "title" "body"` 形式も受け付けます。
 
 ## 環境変数
 
@@ -122,7 +120,7 @@ launchctl setenv NOTION_ENV_FILE "/absolute/path/to/secrets.env"
 ローカル切り分け例:
 
 ```bash
-NOTION_ENV_FILE="/absolute/path/to/secrets.env" ./nin.py 'nin "test" "body"'
+NOTION_ENV_FILE="/absolute/path/to/secrets.env" ./nin.py "nin title, body"
 ```
 
 ## セキュリティ注意点
@@ -136,6 +134,7 @@ NOTION_ENV_FILE="/absolute/path/to/secrets.env" ./nin.py 'nin "test" "body"'
 GitHub Actions で以下を実行します。
 
 - `python -m py_compile nin.py`
+- `python -m unittest discover -s tests -p "test_*.py"`
 - `ruff check nin.py`
 - `gitleaks git .`
 - `gitleaks dir . -c .gitleaks.toml`
