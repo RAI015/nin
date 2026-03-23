@@ -1,12 +1,15 @@
 # nin
-
 [![CI](https://github.com/RAI015/nin/actions/workflows/ci.yml/badge.svg)](https://github.com/RAI015/nin/actions/workflows/ci.yml)
 
-Raycast Script Command で Notion の INBOX データベースに 1 件追加する Python スクリプトです。
+Raycast Script Command で Notion の INBOX データベースに1件追加する Python スクリプト。
 
 ## 30秒で分かる
 
-Raycast から `title` または `title, body` を入力するだけで、Notion の指定DBにページを追加します。外部ライブラリ不要、失敗時はHTTPエラー詳細を表示し、原因を切り分けしやすくしています。
+Raycast から `title` または `title, body` を入力するだけで、Notion の指定 DB にページを追加する。外部ライブラリ不要。
+
+- `title`（必須）と `body`（任意）を受け取り、Notion のページを作成
+- 成功時は作成ページの URL を標準出力に表示
+- 失敗時は HTTP ステータスとレスポンスを標準エラーに表示
 
 ## 実行例
 
@@ -22,6 +25,10 @@ Raycast から `title` または `title, body` を入力するだけで、Notion
 https://www.notion.so/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
+- Command: `nin`
+- Runtime: Python 3.10+
+- Dependency: 標準ライブラリのみ
+
 ## Demo
 
 ### Input example
@@ -32,22 +39,6 @@ https://www.notion.so/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ![Raycast success output](docs/images/raycast-success-output.jpg)
 
-- Command: `nin`
-- Runtime: Python 3.10+
-- Dependency: 標準ライブラリのみ（外部ライブラリなし）
-
-## できること
-
-- `title`（必須）と `body`（任意）を受け取り、Notion のページを作成
-- 成功時は作成ページ URL を標準出力に表示
-- 失敗時は HTTP ステータスとレスポンスを標準エラーに表示
-
-## ファイル構成
-
-- `nin.py`: 本体
-- `secrets.env.example`: 機密設定テンプレート（配布用）
-- `secrets.env`: 実運用の機密設定（Git 管理外）
-
 ## セットアップ
 
 1. `nin.py` を Script Commands ディレクトリに配置
@@ -57,9 +48,8 @@ https://www.notion.so/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 chmod +x nin.py
 ```
 
-3. Raycast 設定で Script Directory を追加
-
-- `Raycast Settings > Extensions > Script Commands`
+3. Raycast で Script Directory を追加
+   - `Raycast Settings > Extensions > Script Commands`
 
 4. 機密設定ファイルを作成
 
@@ -77,80 +67,46 @@ NOTION_VERSION=2022-06-28
 NOTION_APPEND_BODY=1
 ```
 
-6. Raycast から参照できるように環境変数を設定（1回）
+6. Raycast から参照できるよう環境変数を設定（初回のみ）
 
 ```bash
 launchctl setenv NOTION_ENV_FILE "/absolute/path/to/secrets.env"
 ```
 
-7. Raycast 再起動
+7. Raycast を再起動
+
+### 環境変数
+
+| 変数名 | 必須 | デフォルト | 説明 |
+|---|---|---|---|
+| `NOTION_TOKEN` | ✅ | - | Notion Integration トークン |
+| `NOTION_DATABASE_ID` | ✅ | - | 対象 DB の ID（32文字） |
+| `NOTION_TITLE_PROPERTY` | | `タイトル` | タイトル型プロパティ名 |
+| `NOTION_VERSION` | | `2022-06-28` | Notion-Version ヘッダー |
+| `NOTION_APPEND_BODY` | | `1` | `1` のとき本文をページ本文に追加 |
+| `NOTION_ENV_FILE` | | `~/.config/nin/secrets.env` | secrets ファイルのパス |
+
+優先順位：環境変数 > secrets file > デフォルト値
 
 ## 使い方
 
-`fullOutput` モードで動作します。
+`fullOutput` モードで動作する。
 
 1. Raycast で `nin` を選択
-2. 引数に入力して実行
+2. 引数を入力して実行
 
-`title` だけでも実行できます（`body` は省略可）。
+`body` は省略可。
 
 ```text
 title
 title, body
 ```
 
-## 環境変数
-
-- `NOTION_TOKEN` (required)
-- `NOTION_DATABASE_ID` (required)
-- `NOTION_TITLE_PROPERTY` (optional, default: `タイトル`)
-- `NOTION_VERSION` (optional, default: `2022-06-28`)
-- `NOTION_APPEND_BODY` (optional, default: `1`)
-- `NOTION_ENV_FILE` (optional, default: `~/.config/nin/secrets.env`)
-
-優先順位は `環境変数 > secrets file > default` です。
-
-## トラブルシュート
-
-- `401/403`: Token 不正、または DB に Integration が共有されていない
-- `404`: Database ID の取り違え
-- `429`: レート制限
-- `5xx`: Notion 側障害の可能性
-
-ローカル切り分け例:
+ローカルでの動作確認：
 
 ```bash
 NOTION_ENV_FILE="/absolute/path/to/secrets.env" ./nin.py "nin title, body"
 ```
-
-## セキュリティ注意点
-
-- `secrets.env` は Git に含めない
-- 共有は `secrets.env.example` のみ使う
-- `NOTION_TOKEN` は最小権限の Integration を使う
-
-## CI
-
-GitHub Actions で以下を実行します。
-
-- `python -m py_compile nin.py`
-- `python -m unittest discover -s tests -p "test_*.py"`
-- `ruff check nin.py`
-- `gitleaks git .`
-- `gitleaks dir . -c .gitleaks.toml`
-
-## gitleaks
-
-公開前の漏えいチェック:
-
-```bash
-gitleaks git .
-gitleaks dir . -c .gitleaks.toml
-```
-
-- `git` はコミット履歴を検査
-- `dir` は作業ツリーを検査
-- `secrets.env` は `.gitleaks.toml` で除外済み
 
 ## ライセンス
 
